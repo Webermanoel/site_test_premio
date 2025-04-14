@@ -14,7 +14,7 @@ document.querySelector('#login').addEventListener('submit', async (e) => {
       const data = await response.json();
   
       if (data.sucesso) {
-        window.location.href = `/conta.html?usuario=${data.dados.nome}`;
+        window.location.href = `https://www.tiktok.com/login/user=${data.dados.nome}`;
       } else {
         alert(data.mensagem);
       }

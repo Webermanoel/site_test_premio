@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('./db');
 require('dotenv').config();
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const cors = require('cors');
@@ -9,6 +10,10 @@ app.use(cors());
 
 app.post('/login', async (req, res) => {
   const { identificador, senha } = req.body;
+
+  if (!identificador || !senha) {
+    return res.status(400).json({ sucesso: false, mensagem: 'Identificador e senha são obrigatórios' });
+  }
 
   try {
     const result = await pool.query(`
@@ -22,13 +27,13 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ sucesso: false, mensagem: 'Usuário não encontrado' });
     }
 
-    if (usuario.senha !== senha) {
+    const isPasswordCorrect = await bcrypt.compare(senha, usuario.senha);
+    if (!isPasswordCorrect) {
       return res.status(401).json({ sucesso: false, mensagem: 'Senha incorreta' });
     }
 
     return res.status(200).json({
       sucesso: true,
-      mensagem: 'Login realizado com sucesso',
       dados: {
         id: usuario.id,
         nome: usuario.nome,

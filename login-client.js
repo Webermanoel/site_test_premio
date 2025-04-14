@@ -5,7 +5,7 @@ document.querySelector('#login').addEventListener('submit', async (e) => {
     const senha = document.querySelector('#senha').value;
   
     try {
-      const response = await fetch('https://SEU-APP-RAILWAY/login', {
+      const response = await fetch('https://sitetestpremio-production.up.railway.app', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identificador, senha })

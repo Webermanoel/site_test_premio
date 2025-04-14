@@ -1,11 +1,11 @@
 const express = require('express');
-const cors = require('cors');
 const pool = require('./db');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+const cors = require('cors');
 app.use(express.json());
+app.use(cors());
 
 app.post('/login', async (req, res) => {
   const { identificador, senha } = req.body;

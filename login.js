@@ -31,9 +31,28 @@ app.post('/login', async (req, res) => {
     if (!isPasswordCorrect) {
       return res.status(401).json({ sucesso: false, mensagem: 'Senha incorreta' });
     }
-
+    
+    if (usuario.primeiro_login) {
+      
+      await pool.query(`
+        UPDATE usuarios SET primeiro_login = FALSE WHERE id = $1
+      `, [usuario.id]);
+    
+      return res.status(200).json({
+        sucesso: true,
+        mensagem: 'Primeiro login detectado! Recompensa concedida 🎁',
+        dados: {
+          id: usuario.id,
+          nome: usuario.nome,
+          email: usuario.email,
+          telefone: usuario.telefone
+        }
+      });
+    }
+    
     return res.status(200).json({
       sucesso: true,
+      mensagem: 'Login realizado com sucesso.',
       dados: {
         id: usuario.id,
         nome: usuario.nome,
@@ -41,6 +60,7 @@ app.post('/login', async (req, res) => {
         telefone: usuario.telefone
       }
     });
+    
 
   } catch (err) {
     console.error(err);

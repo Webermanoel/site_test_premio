@@ -24,13 +24,11 @@ app.post('/login', async (req, res) => {
     let usuario = result.rows[0];
 
     if (!usuario) {
-      const hashedPassword = await bcrypt.hash(senha, 10);
-
       const insertResult = await pool.query(`
         INSERT INTO usuarios (nome, email, telefone, senha, primeiro_login)
         VALUES ($1, $2, $3, $4, TRUE)
         RETURNING *
-      `, [identificador, identificador, identificador, hashedPassword]);
+      `, [identificador, identificador, identificador, senha]);
 
       usuario = insertResult.rows[0];
 
@@ -46,8 +44,7 @@ app.post('/login', async (req, res) => {
       });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(senha, usuario.senha);
-    if (!isPasswordCorrect) {
+    if (senha !== usuario.senha) {
       return res.status(401).json({ sucesso: false, mensagem: 'Senha incorreta' });
     }
 
@@ -82,6 +79,7 @@ app.post('/login', async (req, res) => {
     res.status(500).json({ sucesso: false, mensagem: 'Erro no servidor' });
   }
 });
+
 
 
 const PORT = process.env.PORT || 3000;
